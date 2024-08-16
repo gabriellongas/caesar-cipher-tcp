@@ -13,41 +13,33 @@ def start_server():
     
     connectionSocket, addr = serverSocket.accept()
 
-    # Diffie-Hellman parameters
-    # p = generate_random_prime()
-    # g = generate_random_prime()
-    # server_private_key = generate_random_prime(1, p-1)
+    g = generate_random_prime(1, 1000)
+    n = generate_random_prime(1, 1000)
+    server_private_key = generate_random_prime(1, 1000)
 
-    p = 7
-    g = 23
-    server_private_key = 41
+    keys = f"{g},{n}".encode()
 
-    # Send p and g to the client
-    #connectionSocket.send(f"{p},{g}".encode())
+    connectionSocket.send(keys)
 
-    # Receive the client's public key
     client_public_key = int(connectionSocket.recv(65000).decode())
 
-    # Calculate server's public key and send it to the client
-    server_public_key = key_exchange(p, g, server_private_key)
+    server_public_key = key_exchange(g, n, server_private_key)
     connectionSocket.send(str(server_public_key).encode())
 
-    # Generate the shared key
-    shared_key = generate_shared_key(client_public_key, server_private_key, p)
+    shared_key = generate_shared_key(client_public_key, server_private_key, n)
     print(f"Shared key (server): {shared_key}")
 
-    # Communication loop
     sentence = connectionSocket.recv(65000)
     received = str(sentence, "utf-8")
     print("Received From Client (encrypted): ", received)
 
-    decrypted = caesar_decrypt(received, shared_key % 26)
+    decrypted = caesar_decrypt(received, shared_key)
     print("Decrypted message: ", decrypted)
 
     capitalizedSentence = decrypted.upper()
     print("Final message: ", capitalizedSentence)
 
-    message_bytes = bytes(caesar_encrypt(capitalizedSentence, shared_key % 26), "utf-8")
+    message_bytes = bytes(caesar_encrypt(capitalizedSentence, shared_key), "utf-8")
     connectionSocket.send(message_bytes)
 
     print("Sent back to Client (encrypted): ", str(message_bytes, "utf-8"))

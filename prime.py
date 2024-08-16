@@ -1,9 +1,8 @@
 import random
 
-def generate_random_prime(lower=1, upper=10000):
+def generate_random_prime(lower, upper):
     while True:
         num = random.randint(lower, upper)
-        print(num)
         if check_prime(num):
             return num
 
@@ -28,7 +27,8 @@ def check_prime(num):
         R = num % i
         if R == 0:
             return False
-        break
         i += 1
     else:
         return True
+    
+#print(generate_random_prime(1, 10000))

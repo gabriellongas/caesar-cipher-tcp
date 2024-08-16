@@ -11,33 +11,26 @@ clientSocket = socket(AF_INET, SOCK_STREAM)
 def start_client():
     clientSocket.connect((serverName, serverPort))
 
-    # Receive p and g from the server
-    # p, g = map(int, clientSocket.recv(65000).decode().split(','))
-    # client_private_key = generate_random_prime(1, p-1)
+    keys = clientSocket.recv(65000).decode().split(',')
 
-    p = 7
-    g = 23
-    client_private_key = 33
+    g, n = map(int, keys)
+    client_private_key = generate_random_prime(1, 1000)
 
-    # Calculate client's public key and send it to the server
-    client_public_key = key_exchange(p, g, client_private_key)
+    client_public_key = key_exchange(g, n, client_private_key)
     clientSocket.send(str(client_public_key).encode())
 
-    # Receive server's public key
     server_public_key = int(clientSocket.recv(65000).decode())
 
-    # Generate the shared key
-    shared_key = generate_shared_key(server_public_key, client_private_key, p)
+    shared_key = generate_shared_key(server_public_key, client_private_key, n)
     print(f"Shared key (client): {shared_key}")
 
-    # Communication loop
     sentence = input("Input lowercase sentence: ")
-    encrypted = caesar_encrypt(sentence, shared_key % 26)
+    encrypted = caesar_encrypt(sentence, shared_key)
     clientSocket.send(bytes(encrypted, "utf-8"))
 
     modifiedSentence = clientSocket.recv(65000)
     text = str(modifiedSentence, "utf-8")
-    decrypted = caesar_decrypt(text, shared_key % 26)
+    decrypted = caesar_decrypt(text, shared_key)
     print("Received from Server (decrypted): ", decrypted)
     clientSocket.close()
 

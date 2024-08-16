@@ -16,8 +16,8 @@ def caesar_encrypt(text: str, shift: int) -> str:
 
     for char in text:
         if char.isalpha():
-            ascii_offset = 65 if char.isupper() else 97
-            shifted_char = chr((ord(char) - ascii_offset + shift) % 26 + ascii_offset)
+            offset = 65 if char.isupper() else 97
+            shifted_char = chr((ord(char) - offset + shift) % 26 + offset)
             result.append(shifted_char)
         else:
             result.append(char)
@@ -29,9 +29,9 @@ def caesar_decrypt(text: str, shift: int) -> str:
     result = []
 
     for char in text:
-        if char.isalpha(): # chek if is letter
-            ascii_offset = 65 if char.isupper() else 97
-            shifted_char = chr((ord(char) - ascii_offset - shift) % 26 + ascii_offset)
+        if char.isalpha(): # check if is letter
+            offset = 65 if char.isupper() else 97
+            shifted_char = chr((ord(char) - offset - shift) % 26 + offset)
             result.append(shifted_char)
         else:
             result.append(char)
